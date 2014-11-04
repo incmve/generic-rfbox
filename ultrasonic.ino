@@ -27,7 +27,8 @@ v 0.1    Read distance and send via RF
  * Auteur : Yves Grange
  * Version : 0.1
  * Lase update : 10/10/2014
- * 
+ * https://github.com/Yves911/generic_433_sender
+ *
  * Based on: Valentin CARRUESCO aka idleman and Manuel Esteban aka Yaug (http://manuel-esteban.com) work  
  * Sonar source: http://arduinobasics.blogspot.nl/2012/11/arduinobasics-hc-sr04-ultrasonic-sensor.html
  */

@@ -1,4 +1,4 @@
-generic-ultrasonic
+generic-rfbox
 ==================
 
-pimatic ultrasonic using generic protocol
+collection of Arduino codes to make different probes for pimatic.

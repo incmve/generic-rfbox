@@ -242,7 +242,7 @@ void loop()
  else {
  /* Send the distance to the computer using Serial protocol, and
  turn LED OFF to indicate successful reading. */
- int BytesType[] = {0,0,0,1}; // Read DS18B20 and transmit value as sensor 1
+ int BytesType[] = {0,0,0,1}; // Read sonar and transmit value as sensor 1
  transmit(true, distance, BytesType, 6);
  Serial.println(distance);
  }
@@ -256,9 +256,9 @@ void loop()
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
  unsigned long CounterValue = temperature * 10;  
- int BytesType[] = {0,0,1,0};
- transmit(true, CounterValue, BytesType, 6);
+ int BytesType[] = {0,0,1,0}; // type 2
+ transmit(true, CounterValue, BytesType, 6); // transmit
  Serial.println(CounterValue);
- delay(60000);
+ delay(60000); //delay 60s
 }
 

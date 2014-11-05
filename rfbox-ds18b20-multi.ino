@@ -28,7 +28,6 @@ v 0.1    Read temperature and send via RF
  * https://github.com/Yves911/generic_433_sender
  *
  * Based on: Valentin CARRUESCO aka idleman and Manuel Esteban aka Yaug (http://manuel-esteban.com) work  
- * Sonar source: http://arduinobasics.blogspot.nl/2012/11/arduinobasics-hc-sr04-ultrasonic-sensor.html
  */
 
 
@@ -220,10 +219,10 @@ void loop()
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
  unsigned long CounterValue = temperature * 10;
- int BytesType[] = {0,0,0,1};
- transmit(true, CounterValue, BytesType, 6);
+ int BytesType[] = {0,0,0,1}; // type 1 in binary
+ transmit(true, CounterValue, BytesType, 6); // transmit
  Serial.println(CounterValue);
- delay(5000);
+ delay(5000); // 5s delay
  
   // Read DS18B20 and transmit value as sensor 2
  float temperature2;
@@ -231,8 +230,8 @@ void loop()
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(1); // Get temperature in Celcius
  unsigned long CounterValue2 = temperature * 10;
- int BytesType2[] = {0,0,1,0};
- transmit(true, CounterValue2, BytesType2, 6);
+ int BytesType2[] = {0,0,1,0}; //type 2
+ transmit(true, CounterValue2, BytesType2, 6); //transmit
  Serial.println(CounterValue2);
  delay(60000);
 }

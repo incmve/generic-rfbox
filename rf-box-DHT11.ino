@@ -31,8 +31,6 @@ v 0.1    Read DHT11 and send
  */
 
 // Includes
-#include <OneWire.h> // http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
-#include <DallasTemperature.h> // http://download.milesburton.com/Arduino/MaximTemperature/DallasTemperature_LATEST.zip
 #include <dht.h> // http://playground.arduino.cc/Main/DHTLib#.UyMXevldWCQ
 
 // Define vars
@@ -222,10 +220,10 @@ void loop()
   case DHTLIB_OK:
    float humfloat = DHT.humidity;
    int CounterValue = humfloat * 10;
-   int BytesType[] = {0,0,0,1};
-   transmit(true, CounterValue, BytesType, 6);
+   int BytesType[] = {0,0,0,1}; // type 1
+   transmit(true, CounterValue, BytesType, 6); // transmit
    break;
  }
- delay(60000);
+ delay(60000); // delay 60s
 } 
 

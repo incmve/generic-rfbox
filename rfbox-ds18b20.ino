@@ -1,22 +1,22 @@
 /*
                  Arduino Nano V3
-                     _______
+	                    _____
   RX             D0 -|  N  |- 
   TX             D1 -|  A  |-             GND
   RESET             -|  N  |-             RESET
-  GND               -|  O  |-   	      5V
+  GND               -|  O  |-   	        5V
   receive        D2 -|     |- A7
                  D3 -|  V  |- A6      
   transmit       D4 -|  3  |- A5          SCL
-                 D5 -|     |- A4          SDA
+  DS18b20        D5 -|     |- A4          SDA
                  D6 -|     |- A3      
                  D7 -|     |- A2      
                  D8 -|     |- A1      
-  DHT11          D9 -|     |- A0      			 
+                 D9 -|     |- A0      			 
                 D10 -|     |-             AREF
-  MOSI          D11 -|     |-             3.3V			
-  MISO          D12 -|_____|- D13         LED/SCK
-v 0.1    Read DHT11 and send
+                D11 -|     |-             3.3V			
+                D12 -|_____|- D13         LED/SCK
+v 0.1    Read temperature and send via RF
 
  * Generic Sender code : Send a value (counter) over RF 433.92 mhz
  * Fréquence : 433.92 mhz
@@ -26,25 +26,33 @@ v 0.1    Read DHT11 and send
  * Version : 0.1
  * Lase update : 10/10/2014
  * https://github.com/Yves911/generic_433_sender
- * 
+ *
  * Based on: Valentin CARRUESCO aka idleman and Manuel Esteban aka Yaug (http://manuel-esteban.com) work  
+ * Sonar source: http://arduinobasics.blogspot.nl/2012/11/arduinobasics-hc-sr04-ultrasonic-sensor.html
  */
+
 
 // Includes
 #include <OneWire.h> // http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
 #include <DallasTemperature.h> // http://download.milesburton.com/Arduino/MaximTemperature/DallasTemperature_LATEST.zip
-#include <dht.h> // http://playground.arduino.cc/Main/DHTLib#.UyMXevldWCQ
+
 
 // Define vars
-#define DHT11_PIN 9
 #define senderPin 4
+#define ONE_WIRE_BUS 5 // DS18B20 PIN
+
 
 long codeKit = 1000;  // Your unique ID for your Arduino node
 int Bytes[30]; 
 int BytesData[30]; 
+int maximumRange = 200; // Maximum range needed
+int minimumRange = 0; // Minimum range needed
+long duration, distance; // Duration used to calculate distance
+const int ledPin = 13; // LED PIN
 
 // Start includes
-dht DHT;
+OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance
+DallasTemperature sensors(&oneWire); // Pass our oneWire reference to Dallas Temperature
 
 void itob(unsigned long integer, int length)
 {  
@@ -164,10 +172,6 @@ void transmit(boolean positive, unsigned long Counter, int BytesType[], int repe
  }
 }
 
-
-
-
-
 void transmitOLD(boolean positive, unsigned long Counter, int BytesType[])
 {
  int i;
@@ -202,30 +206,37 @@ void transmitOLD(boolean positive, unsigned long Counter, int BytesType[])
 
 }
 
-
-
-
-
-
  void setup()
 {
   pinMode(senderPin, OUTPUT);
   buildSignal();
-}
+  Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results. - See more at: http://blog.jacobean.net/?p=353#sthash.JogJVBkM.dpuf
+  pinMode(ledPin, OUTPUT); // Use LED indicator (if required)
+  }
 
 void loop()
 {
- // Read DHT11 and transmit value as sensor 1
- int chk = DHT.read11(DHT11_PIN);
- switch (chk)
- {
-  case DHTLIB_OK:
-   float humfloat = DHT.humidity;
-   int CounterValue = humfloat * 10;
-   int BytesType[] = {0,0,0,1};
-   transmit(true, CounterValue, BytesType, 6);
-   break;
- }
+  // Read DS18B20 and transmit value as sensor 1
+ float temperature;
+ sensors.begin(); //start up temp sensor
+ sensors.requestTemperatures(); // Get the temperature
+ temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
+ unsigned long CounterValue = temperature * 10;
+ Blink(ledPin,2);
+ int BytesType[] = {0,0,0,1};
+ transmit(true, CounterValue, BytesType, 6);
+ Serial.println(CounterValue);
  delay(60000);
-} 
+
+}
+void Blink(int led, int times)
+{
+ for (int i=0; i< times; i++)
+ {
+  digitalWrite(ledPin,HIGH);
+  delay (250);
+  digitalWrite(ledPin,LOW);
+  delay (250);
+ }
+}
 

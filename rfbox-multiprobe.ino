@@ -225,6 +225,7 @@ void loop()
       transmit(true, CounterValue, BytesType, 6);
       break;
 	  Serial.println(CounterValue);
+	  delay(5000);
     }
   }
   if (ultrasonic) {

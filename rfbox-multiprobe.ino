@@ -205,9 +205,9 @@ void loop()
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
  unsigned long CounterValue = temperature * 10;
- Blink(ledPin,1);
  int BytesType[] = {0,0,0,1}; // type = 1
  transmit(true, CounterValue, BytesType, 6);
+ Blink(ledPin,1);
  Serial.println(CounterValue);
  delay(5000);
   }
@@ -220,9 +220,9 @@ void loop()
       case DHTLIB_OK:
       float humfloat = DHT.humidity;
       int CounterValue = humfloat * 10;
-      Blink(ledPin,2); 
       int BytesType[] = {0,0,1,0}; // type = 2
       transmit(true, CounterValue, BytesType, 6);
+	  Blink(ledPin,2);
       break;
 	  Serial.println(CounterValue);
 	  delay(5000);
@@ -253,10 +253,10 @@ void loop()
 	else {
 	/* Send the distance to the computer using Serial protocol, and
 	turn LED OFF to indicate successful reading. */
-	Blink(ledPin,3);
 	int BytesType[] = {0,0,1,1}; //transmit value as sensor 3
 	transmit(true, distance, BytesType, 6);
 	Serial.println(distance);
+        Blink(ledPin,3);
 		}
 	}
 
@@ -273,8 +273,3 @@ void Blink(int led, int times)
   delay (250);
  }
 }
-
-
-
-
-

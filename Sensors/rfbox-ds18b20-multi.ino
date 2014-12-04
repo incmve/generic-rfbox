@@ -28,6 +28,7 @@ v 0.1    Read temperature and send via RF
  * https://github.com/Yves911/generic_433_sender
  *
  * Based on: Valentin CARRUESCO aka idleman and Manuel Esteban aka Yaug (http://manuel-esteban.com) work  
+ * Sonar source: http://arduinobasics.blogspot.nl/2012/11/arduinobasics-hc-sr04-ultrasonic-sensor.html
  */
 
 
@@ -208,21 +209,30 @@ void transmitOLD(boolean positive, unsigned long Counter, int BytesType[])
 {
   pinMode(senderPin, OUTPUT);
   buildSignal();
-  Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results. - See more at: http://blog.jacobean.net/?p=353#sthash.JogJVBkM.dpuf
+  Serial.begin(115200); // Open serial monitor at 115200 baud to see results.
   }
 
 void loop()
 {
-  // Read DS18B20 and transmit value as sensor 1
+	  // Read DS18B20 and transmit value as sensor 1
  float temperature;
  sensors.begin(); //start up temp sensor
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
  unsigned long CounterValue = temperature * 10;
- int BytesType[] = {0,0,0,1}; // type 1 in binary
- transmit(true, CounterValue, BytesType, 6); // transmit
- Serial.println(CounterValue);
- delay(5000); // 5s delay
+ int BytesType[] = {0,0,0,1};
+ if (temperature >= 0.0) {
+      Serial.println("Positive temp");
+      Serial.println(CounterValue);
+      transmit(true, CounterValue, BytesType, 6); 
+    }
+    if (temperature < 0.0) {
+      Serial.println("Negative temp");
+      Serial.println("-");
+      Serial.println(CounterValue);
+      transmit(false, CounterValue, BytesType, 6);
+    }
+ delay(5000);
  
   // Read DS18B20 and transmit value as sensor 2
  float temperature2;
@@ -230,8 +240,19 @@ void loop()
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(1); // Get temperature in Celcius
  unsigned long CounterValue2 = temperature * 10;
- int BytesType2[] = {0,0,1,0}; //type 2
- transmit(true, CounterValue2, BytesType2, 6); //transmit
+ int BytesType2[] = {0,0,1,0};
+  if (temperature >= 0.0) {
+      Serial.println("Positive temp");
+      Serial.println(CounterValue2);
+      transmit(true, CounterValue2, BytesType2, 6); 
+    }
+    if (temperature < 0.0) {
+      Serial.println("Negative temp");
+      Serial.println("-");
+      Serial.println(CounterValue2);
+      transmit(false, CounterValue2, BytesType2, 6);
+    }
+ transmit(true, CounterValue2, BytesType2, 6);
  Serial.println(CounterValue2);
  delay(60000);
 }

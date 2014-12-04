@@ -3,21 +3,19 @@
                      _______
   RX             D0 -|  N  |- 
   TX             D1 -|  A  |-             GND
-  RESET             -|  N  |-             RESET
-  GND               -|  O  |-   	  5V
+					-|  N  |-             
+  GND               -|  O  |-   		  5V
   receive        D2 -|     |- A7
                  D3 -|  V  |- A6      
   transmit       D4 -|  3  |- A5          SCL
   DS18B20        D5 -|     |- A4          SDA
                  D6 -|     |- A3      
                  D7 -|     |- A2      
-  LED            D8 -|     |- A1      
+				 D8 -|     |- A1      
   DHT11          D9 -|     |- A0      			 
-  SS            D10 -|     |-             AREF
-  MOSI          D11 -|     |-             3.3V			
-  MISO          D12 -|_____|- D13         LED/SCK
-
-v 0.1    First setup
+				D10 -|     |-             
+	ECHO		D11 -|     |-             3.3V			
+	TRIG		D12 -|_____|- D13         INT.LED
 
  * Generic Sender code : Send a value (counter) over RF 433.92 mhz
  * Fréquence : 433.92 mhz
@@ -26,7 +24,7 @@ v 0.1    First setup
  * Auteur : Yves Grange * https://github.com/Yves911/generic_433_sender
  * Version : 0.1
  * Lase update : 10/10/2014
- * 
+ * rfbox source https://github.com/incmve/generic-rfbox
  * Based on: Valentin CARRUESCO aka idleman and Manuel Esteban aka Yaug (http://manuel-esteban.com) work  
  * used the code from (https://github.com/koffienl/pimatic-probe) to enable/disable modules
  */
@@ -42,15 +40,14 @@ v 0.1    First setup
 #define senderPin 4 // 
 const int ledPin = 13; // internal LED PIN
 #define ONE_WIRE_BUS 5 // DS18B20 PIN
-// #define rxPin 2   // RF RECEIVER PIN
 #define echoPin 11 // Echo Pin
 #define trigPin 12 // Trigger Pin
 
 long codeKit = 1000;  // Your unique ID for your Arduino node
 int Bytes[30]; 
 int BytesData[30]; 
-int maximumRange = 200; // Maximum range needed
-int minimumRange = 0; // Minimum range needed
+int maximumRange = 200; // Maximum range sonar
+int minimumRange = 0; // Minimum range sonar
 long duration, distance; // Duration used to calculate distance
 
 // Config which modules to use
@@ -219,7 +216,7 @@ void loop()
     }
  Blink(ledPin,1);
  Serial.println(CounterValue);
- delay(5000);
+ delay(10000); // wait for 10 seconds to go to next sensor
   }
 
   if (DHT11) {
@@ -235,7 +232,7 @@ void loop()
 	  Blink(ledPin,2);
       break;
 	  Serial.println(CounterValue);
-	  delay(5000);
+	  delay(10000); // wait for 10 seconds to go to next sensor
     }
   }
   if (ultrasonic) {
@@ -251,13 +248,13 @@ void loop()
 	digitalWrite(trigPin, LOW);
 	duration = pulseIn(echoPin, HIGH);
  
-	//Calculate the distance (in cm) based on the speed of sound.
+	//Calculate the distance (in cm) based on the pace of sound. http://www.instructables.com/id/Using-a-SR04/
 	distance = duration/58.2;
  
 	if (distance >= maximumRange || distance <= minimumRange){
 	/* Send a negative number to computer and Turn LED ON 
 	to indicate "out of range" */
-	Serial.println("-1");
+	Serial.println("Out of range");
  
 	}
 	else {
@@ -270,7 +267,7 @@ void loop()
 		}
 	}
 
-  delay(60000);
+  delay(1800000); // wait for 30 minutes to restart loop, be aware if to short RF pollution will occur.
   
 }
 void Blink(int led, int times)

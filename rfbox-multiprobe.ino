@@ -43,7 +43,7 @@ const int ledPin = 13; // internal LED PIN
 #define echoPin 11 // Echo Pin
 #define trigPin 12 // Trigger Pin
 
-long codeKit = 1000;  // Your unique ID for your Arduino node
+long codeKit = 1001;  // Your unique ID for your Arduino node
 int Bytes[30]; 
 int BytesData[30]; 
 int maximumRange = 200; // Maximum range sonar

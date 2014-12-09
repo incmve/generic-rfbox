@@ -42,12 +42,9 @@ v 0.1    Read temperature and send via RF
 #define ONE_WIRE_BUS 5 // DS18B20 PIN
 
 
-long codeKit = 1000;  // Your unique ID for your Arduino node
+long codeKit = 1001;  // Your unique ID for your Arduino node
 int Bytes[30]; 
 int BytesData[30]; 
-int maximumRange = 200; // Maximum range needed
-int minimumRange = 0; // Minimum range needed
-long duration, distance; // Duration used to calculate distance
 
 // Start includes
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance
@@ -219,41 +216,46 @@ void loop()
  sensors.begin(); //start up temp sensor
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
- unsigned long CounterValue = temperature * 10;
- int BytesType[] = {0,0,0,1};
+ Serial.println("Raw temp:");
+ Serial.println(temperature);
+ int BytesType[] = {0,0,0,1}; // type 1
+ int CounterValue;
  if (temperature >= 0.0) {
+   CounterValue = temperature * 10;
       Serial.println("Positive temp");
       Serial.println(CounterValue);
       transmit(true, CounterValue, BytesType, 6); 
     }
     if (temperature < 0.0) {
+      CounterValue = temperature * -10;
       Serial.println("Negative temp");
-      Serial.println("-");
       Serial.println(CounterValue);
       transmit(false, CounterValue, BytesType, 6);
     }
- delay(5000);
+ delay(10000); // 10 second delay to next sensor
+ Serial.println("Reading next sensor");
  
   // Read DS18B20 and transmit value as sensor 2
  float temperature2;
  sensors.begin(); //start up temp sensor
  sensors.requestTemperatures(); // Get the temperature
- temperature = sensors.getTempCByIndex(1); // Get temperature in Celcius
- unsigned long CounterValue2 = temperature * 10;
+ temperature2 = sensors.getTempCByIndex(1); // Get temperature in Celcius
+ Serial.println("Raw temp2:");
+ Serial.println(temperature2);
+ int CounterValue2;
  int BytesType2[] = {0,0,1,0};
-  if (temperature >= 0.0) {
-      Serial.println("Positive temp");
+  if (temperature2 >= 0.0) {
+    CounterValue2 = temperature2 * 10;
+      Serial.println("Positive temp2");
       Serial.println(CounterValue2);
       transmit(true, CounterValue2, BytesType2, 6); 
     }
-    if (temperature < 0.0) {
-      Serial.println("Negative temp");
-      Serial.println("-");
+    if (temperature2 < 0.0) {
+      CounterValue2 = temperature2 * -10;
+      Serial.println("Negative temp2");
       Serial.println(CounterValue2);
       transmit(false, CounterValue2, BytesType2, 6);
     }
- transmit(true, CounterValue2, BytesType2, 6);
- Serial.println(CounterValue2);
- delay(60000);
+ delay(1800000); //wait 30 minutes to next loop
+ Serial.println("Restarting loop");
 }
-

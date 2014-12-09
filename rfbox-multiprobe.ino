@@ -201,21 +201,22 @@ void loop()
  float temperature;
  sensors.requestTemperatures(); // Get the temperature
  temperature = sensors.getTempCByIndex(0); // Get temperature in Celcius
- unsigned long CounterValue = temperature * 10;
+ int CounterValue;
  int BytesType[] = {0,0,0,1}; // type = 1
   if (temperature >= 0.0) {
+      CounterValue = temperature * 10;
       Serial.println("Positive temp");
       Serial.println(CounterValue);
       transmit(true, CounterValue, BytesType, 6); 
     }
     if (temperature < 0.0) {
+      CounterValue = temperature * -10;
       Serial.println("Negative temp");
       Serial.println("-");
       Serial.println(CounterValue);
       transmit(false, CounterValue, BytesType, 6);
     }
  Blink(ledPin,1);
- Serial.println(CounterValue);
  delay(10000); // wait for 10 seconds to go to next sensor
   }
 

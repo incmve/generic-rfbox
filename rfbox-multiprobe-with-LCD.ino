@@ -204,15 +204,6 @@ void setup()
 
 void loop()
 {
-    uint8_t buttons = lcd.readButtons();
-
-  if (buttons) {
-    lcd.clear();
-    lcd.setCursor(6,1); // col,row
-    if (buttons & BUTTON_SELECT) {
-      lcd.setBacklight(ON);
-    }
-  }
   if (DS18B20) {
  Serial.println("Begin ds18b20");
      // Read DS18B20 and transmit value as sensor 1

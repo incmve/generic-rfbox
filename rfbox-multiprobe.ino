@@ -1,23 +1,5 @@
 /*
-                 Arduino Nano V3
-                     _______
-  RX             D0 -|  N  |- 
-  TX             D1 -|  A  |-             GND
-					-|  N  |-             
-  GND               -|  O  |-   		  5V
-  receive        D2 -|     |- A7
-                 D3 -|  V  |- A6      
-  transmit       D4 -|  3  |- A5          SCL
-  DS18B20        D5 -|     |- A4          SDA
-                 D6 -|     |- A3      
-                 D7 -|     |- A2      
-				 D8 -|     |- A1      
-  DHT11          D9 -|     |- A0      			 
-				D10 -|     |-             
-	ECHO		D11 -|     |-             3.3V			
-	TRIG		D12 -|_____|- D13         INT.LED
-
- * Generic Sender code : Send a value (counter) over RF 433.92 mhz
+ * * Generic Sender code : Send a value (counter) over RF 433.92 mhz
  * Fréquence : 433.92 mhz
  * Protocole : homepi 
  * Licence : CC -by -sa
@@ -51,7 +33,7 @@ int minimumRange = 0; // Minimum range sonar
 long duration, distance; // Duration used to calculate distance
 
 // Config which modules to use
-boolean DHT11 = false;
+boolean DHT11 = true;
 boolean DS18B20 = true;
 boolean ultrasonic = false;
 
@@ -59,7 +41,8 @@ boolean ultrasonic = false;
 // Start includes
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance
 DallasTemperature sensors(&oneWire); // Pass our oneWire reference to Dallas Temperature  
-dht DHT;    
+dht DHT;   
+DeviceAddress insideThermometer;
 
 void itob(unsigned long integer, int length)
 {  
@@ -191,12 +174,25 @@ void setup()
   if (DS18B20) {
      //start up temp sensor
     sensors.begin();
+    sensors.getAddress(insideThermometer, 0);
+    int reso = sensors.getResolution(insideThermometer);
+    Serial.println("Sensor resolution");
+    Serial.println(reso);
+    if (reso != 12) {
+        Serial.print("Resolution of DS18B20 is not 12 but ");
+        Serial.println("Sensor resolution");
+        Serial.println(reso);
+        Serial.println(" changing to 12\n");
+      sensors.setResolution(insideThermometer, 12);
+        Serial.print("Done\n");
+    }
   }
 }
 
 void loop()
 {
   if (DS18B20) {
+ Serial.println("Begin ds18b20");
      // Read DS18B20 and transmit value as sensor 1
  float temperature;
  sensors.requestTemperatures(); // Get the temperature
@@ -221,8 +217,10 @@ void loop()
   }
 
   if (DHT11) {
+  Serial.println("Begin DHT11");
     // Read DHT11 and transmit value as sensor 2
     int chk = DHT.read11(DHT11_PIN);
+    Serial.println(chk);
     switch (chk)
     {
       case DHTLIB_OK:
@@ -231,9 +229,9 @@ void loop()
       int BytesType[] = {0,0,1,0}; // type = 2
       transmit(true, CounterValue, BytesType, 6);
 	  Blink(ledPin,2);
-      break;
 	  Serial.println(CounterValue);
 	  delay(10000); // wait for 10 seconds to go to next sensor
+      break;
     }
   }
   if (ultrasonic) {
@@ -267,8 +265,8 @@ void loop()
         Blink(ledPin,3);
 		}
 	}
-
-  delay(1800000); // wait for 30 minutes to restart loop, be aware if to short RF pollution will occur.
+Serial.println("End of Loop");
+delay(1800000); // wait for 30 minutes to restart loop, be aware if to short RF pollution will occur.
   
 }
 void Blink(int led, int times)

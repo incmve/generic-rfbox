@@ -19,8 +19,6 @@
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
 
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
-
 // Define vars
 #define DHT11_PIN 9
 #define senderPin 4 // 
@@ -46,6 +44,7 @@ boolean LCD = true;
 
 
 // Start includes
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance
 DallasTemperature sensors(&oneWire); // Pass our oneWire reference to Dallas Temperature  
 dht DHT;   
@@ -180,24 +179,24 @@ void setup()
   
   if (LCD) {
      lcd.begin(16, 2);
-//     Serial.println("LCD started");
+     Serial.println("LCD started");
      lcd.print("Mve home automation");
      lcd.setBacklight(ON);
   }
   if (DS18B20) {
-     //start up temp sensor
+    //start up temp sensor
     sensors.begin();
     sensors.getAddress(insideThermometer, 0);
     int reso = sensors.getResolution(insideThermometer);
-    Serial.println("Sensor resolution");
-    Serial.println(reso);
     if (reso != 12) {
-   //     Serial.print("Resolution of DS18B20 is not 12 but ");
-  //      Serial.println("Sensor resolution");
-  //      Serial.println(reso);
-  //      Serial.println(" changing to 12\n");
+    	lcd.clear();
+    	lcd.print("Resolution not 12");
+        Serial.print("Resolution of DS18B20 is not 12 but ");
+        Serial.println("Sensor resolution");
+        Serial.println(reso);
+        Serial.println(" changing to 12\n");
       sensors.setResolution(insideThermometer, 12);
-  //      Serial.print("Done\n");
+        Serial.print("Done\n");
     }
   }
 }
@@ -259,6 +258,7 @@ void loop()
     }
   }
   if (ultrasonic) {
+  	Serial.println("Begin Ultrasonic");
     // Read Sonar and transmit value as sensor 3
     /* The following trigPin/echoPin cycle is used to determine the
 	distance of the nearest object by bouncing soundwaves off of it. */ 

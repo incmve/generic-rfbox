@@ -15,7 +15,7 @@ int state3;
 #define RELAY3  10
 #define senderPin 4 // 
 
-long codeKit = 1000;  // Your unique ID for your Arduino node
+long codeKit = 1002;  // Your unique ID for your Arduino node
 int Bytes[30]; 
 int BytesData[30]; 
 
@@ -170,26 +170,20 @@ void rfstart(NewRemoteCode receivedCode) {
     // Disable the receiver
     NewRemoteReceiver::disable();
     state1 = digitalRead(RELAY1);
+    Serial.println("Relay 1");
     Serial.println(state1);
-    if (state1 = HIGH)
-    {state1 = 0;}
-    else state1 = 1; 
     int BytesType[] = {0,0,0,1}; //transmit value as sensor 1
 	transmit(true, state1, BytesType, 6);
     delay (5000);
     state2 = digitalRead(RELAY2);
+    Serial.println("Relay 2");
     Serial.println(state2);
-    if (state2 = HIGH)
-    {state2 = 0;}
-    else state2 = 1; 
     int BytesType2[] = {0,0,1,0}; //transmit value as sensor 2
 	transmit(true, state2, BytesType2, 6);
     delay (5000);
     state3 = digitalRead(RELAY3);
+    Serial.println("Relay 3");
     Serial.println(state3);
-    if (state3 = HIGH)
-    {state3 = 0;}
-    else state3 = 1; 
     int BytesType3[] = {0,0,1,1}; //transmit value as sensor 3
 	transmit(true, state3, BytesType3, 6);
     Serial.println(state1);
@@ -198,27 +192,27 @@ void rfstart(NewRemoteCode receivedCode) {
   NewRemoteReceiver::enable();
   }
  
-  if (receivedCode.address == 66 && receivedCode.unit == 6 && receivedCode.switchType == 1) //Unit 66, ID 6, ON
+  if (receivedCode.address == 100 && receivedCode.unit == 6 && receivedCode.switchType == 1) //Unit 66, ID 6, ON
     {
 	digitalWrite(RELAY1,LOW);           // Turns ON Relays 1
   }
-  if (receivedCode.address == 66 && receivedCode.unit == 6 && receivedCode.switchType == 0) //Unit 66, ID 6, OFF
+  if (receivedCode.address == 100 && receivedCode.unit == 6 && receivedCode.switchType == 0) //Unit 66, ID 6, OFF
     {
    digitalWrite(RELAY1,HIGH);          // Turns Relay Off 
   }
-    if (receivedCode.address == 67 && receivedCode.unit == 6 && receivedCode.switchType == 1) //Unit 67, ID 6, ON
+    if (receivedCode.address == 100 && receivedCode.unit == 7 && receivedCode.switchType == 1) //Unit 67, ID 6, ON
     {
 	digitalWrite(RELAY2,LOW);           // Turns ON Relays 1
   }
-  if (receivedCode.address == 67 && receivedCode.unit == 6 && receivedCode.switchType == 0) //Unit 67, ID 6, OFF
+  if (receivedCode.address == 100 && receivedCode.unit == 7 && receivedCode.switchType == 0) //Unit 67, ID 6, OFF
     {
    digitalWrite(RELAY2,HIGH);          // Turns Relay Off 
   }
-    if (receivedCode.address == 68 && receivedCode.unit == 6 && receivedCode.switchType == 1) //Unit 68, ID 6, ON
+    if (receivedCode.address == 100 && receivedCode.unit == 8 && receivedCode.switchType == 1) //Unit 68, ID 6, ON
     {
 	digitalWrite(RELAY3,LOW);           // Turns ON Relays 1
   }
-  if (receivedCode.address == 68 && receivedCode.unit == 6 && receivedCode.switchType == 0) //Unit 68, ID 6, OFF
+  if (receivedCode.address == 100 && receivedCode.unit == 8 && receivedCode.switchType == 0) //Unit 68, ID 6, OFF
     {
    digitalWrite(RELAY3,HIGH);          // Turns Relay Off 
   }

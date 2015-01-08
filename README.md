@@ -17,3 +17,6 @@ Update: added ds18b20 resolution check and if it's not 12 bits it will set it to
 > The resolution of the
 temperature sensor is user-configurable to 9, 10, 11, or 12 bits, corresponding to increments of 0.5°C,
 0.25°C, 0.125°C, and 0.0625°C, respectively. The default resolution at power-up is 12-bit.
+
+Example box:
+![Hardware](rf-box.jpg) 

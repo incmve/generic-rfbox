@@ -15,7 +15,9 @@
 #include <OneWire.h> // http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
 #include <DallasTemperature.h> // http://download.milesburton.com/Arduino/MaximTemperature/DallasTemperature_LATEST.zip
 #include <dht.h> // http://playground.arduino.cc/Main/DHTLib#.UyMXevldWCQ
-
+#include <Wire.h>
+#include <Adafruit_MCP23017.h>
+#include <Adafruit_RGBLCDShield.h>
 
 // Define vars
 #define DHT11_PIN 9
@@ -24,6 +26,8 @@ const int ledPin = 13; // internal LED PIN
 #define ONE_WIRE_BUS 5 // DS18B20 PIN
 #define echoPin 11 // Echo Pin
 #define trigPin 12 // Trigger Pin
+#define ON 0x1 //LCD backlight on
+#define OFF 0x0 //LCD backlight off
 
 long codeKit = 1000;  // Your unique ID for your Arduino node
 int Bytes[30]; 
@@ -36,9 +40,11 @@ long duration, distance; // Duration used to calculate distance
 boolean DHT11 = true;
 boolean DS18B20 = true;
 boolean ultrasonic = false;
+boolean LCD = true;
 
 
 // Start includes
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance
 DallasTemperature sensors(&oneWire); // Pass our oneWire reference to Dallas Temperature  
 dht DHT;   
@@ -171,14 +177,20 @@ void setup()
   pinMode(echoPin, INPUT);
   Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
   
+  if (LCD) {
+     lcd.begin(16, 2);
+     Serial.println("LCD started");
+     lcd.print("Mve home automation");
+     lcd.setBacklight(ON);
+  }
   if (DS18B20) {
-     //start up temp sensor
+    //start up temp sensor
     sensors.begin();
     sensors.getAddress(insideThermometer, 0);
     int reso = sensors.getResolution(insideThermometer);
-    Serial.println("Sensor resolution");
-    Serial.println(reso);
     if (reso != 12) {
+    	lcd.clear();
+    	lcd.print("Resolution not 12");
         Serial.print("Resolution of DS18B20 is not 12 but ");
         Serial.println("Sensor resolution");
         Serial.println(reso);
@@ -201,18 +213,23 @@ void loop()
  int BytesType[] = {0,0,0,1}; // type = 1
   if (temperature >= 0.0) {
       CounterValue = temperature * 10;
-      Serial.println("Positive temp");
-      Serial.println(CounterValue);
+ //     Serial.println("Positive temp");
+ //     Serial.println(CounterValue);
       transmit(true, CounterValue, BytesType, 6); 
     }
     if (temperature < 0.0) {
       CounterValue = temperature * -10;
-      Serial.println("Negative temp");
-      Serial.println("-");
-      Serial.println(CounterValue);
+//      Serial.println("Negative temp");
+//      Serial.println("-");
+//      Serial.println(CounterValue);
       transmit(false, CounterValue, BytesType, 6);
     }
  Blink(ledPin,1);
+ lcd.clear();
+ lcd.setCursor(0,0);
+ lcd.print("Temperature");
+ lcd.setCursor(0,1);
+ lcd.print(temperature);
  delay(10000); // wait for 10 seconds to go to next sensor
   }
 
@@ -220,7 +237,7 @@ void loop()
   Serial.println("Begin DHT11");
     // Read DHT11 and transmit value as sensor 2
     int chk = DHT.read11(DHT11_PIN);
-    Serial.println(chk);
+//    Serial.println(chk);
     switch (chk)
     {
       case DHTLIB_OK:
@@ -229,12 +246,19 @@ void loop()
       int BytesType[] = {0,0,1,0}; // type = 2
       transmit(true, CounterValue, BytesType, 6);
 	  Blink(ledPin,2);
-	  Serial.println(CounterValue);
+//	  Serial.println(CounterValue);
+     lcd.clear();
+     lcd.setCursor(0,0);
+     lcd.print("Humidity");
+     lcd.setCursor(0,1);
+     lcd.print(CounterValue);
+     lcd.print("%");
 	  delay(10000); // wait for 10 seconds to go to next sensor
       break;
     }
   }
   if (ultrasonic) {
+  	Serial.println("Begin Ultrasonic");
     // Read Sonar and transmit value as sensor 3
     /* The following trigPin/echoPin cycle is used to determine the
 	distance of the nearest object by bouncing soundwaves off of it. */ 
@@ -253,7 +277,7 @@ void loop()
 	if (distance >= maximumRange || distance <= minimumRange){
 	/* Send a negative number to computer and Turn LED ON 
 	to indicate "out of range" */
-	Serial.println("Out of range");
+	//Serial.println("Out of range");
  
 	}
 	else {
@@ -261,14 +285,23 @@ void loop()
 	turn LED OFF to indicate successful reading. */
 	int BytesType[] = {0,0,1,1}; //transmit value as sensor 3
 	transmit(true, distance, BytesType, 6);
-	Serial.println(distance);
+	//Serial.println(distance);
         Blink(ledPin,3);
+         lcd.clear();
+         lcd.setCursor(0,0);
+         lcd.print("Afstand");
+         lcd.setCursor(0,1);
+         lcd.print(distance);
+         lcd.print("CM");
 		}
 	}
 Serial.println("End of Loop");
 delay(1800000); // wait for 30 minutes to restart loop, be aware if to short RF pollution will occur.
   
+  
+
 }
+
 void Blink(int led, int times)
 {
  for (int i=0; i< times; i++)

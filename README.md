@@ -20,3 +20,6 @@ temperature sensor is user-configurable to 9, 10, 11, or 12 bits, corresponding 
 
 Example box:
 ![Hardware](rf-box.jpg) 
+
+A new concept is found here
+http://www.thingiverse.com/thing:643661
